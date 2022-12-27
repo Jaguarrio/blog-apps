@@ -1,6 +1,6 @@
 # Blog Apps
 
-Using
+Tech I'm Using (MERN Stack)
 
 React Js
 - Redux
@@ -10,3 +10,16 @@ React Js
 - Headless Ui
 - Axios
 - Lodash
+
+Express Js
+- Passport Js (JWT)
+- Json Web Token
+- CORS
+- Mongoose
+- Cookie-Parser
+- Slugify
+- Bcrypt
+- Multer
+
+Database : Mongo DB
+
