@@ -56,7 +56,7 @@ const UsersPage = () => {
         </header>
         <section className={user && "lg:grid grid-cols-[auto_325px]"}>
           <div className="px-3 space-y-3 flex flex-col">
-            {users.data.length > 0 ? (
+            {users?.data?.length > 0 ? (
               users.data.map((userItem) => {
                 if (user?._id === userItem._id) return;
 
