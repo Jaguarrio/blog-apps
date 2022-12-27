@@ -92,7 +92,7 @@ const Navbar = () => {
       <nav className="bg-[#001d3d] sticky top-0 inset-x-0 lg:hidden w-full p-3 text-white flex items-center justify-between">
         <Link to={"/"}>
           <h1 className="text-lg">
-            Social <span className="text-[#ffd60a]">Apps</span>
+            Blog <span className="text-[#ffd60a]">Apps</span>
           </h1>
         </Link>
         <i onClick={() => setToggle(true)} className="fa-solid fa-bars cursor-pointer"></i>
