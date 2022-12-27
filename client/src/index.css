@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+  background-color: rgb(229 231 235);
+}
+
+::-webkit-file-upload-button {
+  @apply p-2 bg-gray-300 bg-opacity-50 outline-none border-none
+}
