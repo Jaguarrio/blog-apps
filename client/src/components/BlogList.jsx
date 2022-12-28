@@ -3,7 +3,6 @@ import { MdOutlineThumbUpOffAlt } from "react-icons/md";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import { API } from "../utils/api";
-import { hostImage } from "../utils/image";
 import PulseLoader from "react-spinners/PulseLoader";
 
 const BlogList = () => {
@@ -30,7 +29,7 @@ const BlogList = () => {
     <section className="flex justify-center flex-wrap gap-5">
       {data.map((blog) => (
         <Link to={`/blog/${blog.slug}`} key={blog._id} className="rounded-lg w-full max-w-[330px] overflow-hidden grid grid-rows-2 bg-white">
-          <img src={hostImage(blog.image)} className="h-full max-h-[200px] w-full object-cover" alt="" />
+          <img src={blog.image} className="h-full max-h-[200px] w-full object-cover" alt="" />
           <div className="p-3 pb-5 flex flex-col relative">
             <h2 className="text-2xl">{blog.title}</h2>
             <p className="text-sm ">{_.truncate(blog.content, { length: 75 })}</p>

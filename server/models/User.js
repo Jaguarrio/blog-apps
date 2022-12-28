@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String,
-      default: "/public/images/noProfile.png",
+      default: "https://res.cloudinary.com/dvztpkykz/image/upload/v1672228451/noProfile_ewgkba.png",
     },
     followers: [],
     followings: [],

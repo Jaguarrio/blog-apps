@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -20,29 +21,36 @@ const CreateBlogPage = () => {
 
   const onInput = ({ target: { name, value } }) => setFormValues({ ...formValues, [name]: value });
 
-  const submit = useMutation((data) => API.post("/blog/create", data), {
-    retry: false,
-    onError: () => toast.error("Cannot create a blog."),
-    onSuccess: () => {
-      toast.success("Created a blog.");
-      navigate("/");
+  const submit = useMutation(
+    async () => {
+      const { title, content } = formValues;
+      const formImage = new FormData();
+      formImage.append("file", image.file);
+      formImage.append("upload_preset", process.env.REACT_APP_PRESET_NAME);
+
+      const imageUrl = await axios.post(process.env.REACT_APP_HOST_IMAGE_URL, formImage);
+      return API.post("/blog/create", {
+        title,
+        content,
+        image: imageUrl.data.url,
+      });
     },
-  });
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    const { title, content } = formValues;
-
-    if (validateCreateBlog(title, content, image.file)) {
-      return;
+    {
+      retry: false,
+      onError: () => toast.error("Cannot create a blog."),
+      onSuccess: () => {
+        toast.success("Created a blog.");
+        navigate("/");
+      },
     }
+  );
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("image", image.file);
-    submit.mutate(formData);
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const { title, content } = formValues;
+    if (validateCreateBlog(title, content, image.file)) return
+
+    submit.mutate();
   };
 
   if (!user && loading === false) {

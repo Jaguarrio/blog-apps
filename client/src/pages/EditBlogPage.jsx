@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useMutation, useQuery } from "react-query";
@@ -6,7 +7,6 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import PulseLoader from "react-spinners/PulseLoader";
 import Layout from "../components/Layout";
 import { API } from "../utils/api";
-import { hostImage } from "../utils/image";
 import { validateCreateBlog } from "../utils/validate";
 
 const EditBlogPage = () => {
@@ -36,29 +36,41 @@ const EditBlogPage = () => {
 
   const onInput = ({ target: { name, value } }) => setFormValues({ ...formValues, [name]: value });
 
-  const submit = useMutation((data) => API.patch(`/blog/edit/${blogId.slice(-24)}`, data), {
-    retry: false,
-    onError: () => toast.error("Cannot edit the blog."),
-    onSuccess: () => {
-      toast.success("Edited the blog.");
-      navigate("/");
+  const submit = useMutation(
+    async () => {
+      const { title, content } = formValues;
+      let imageUrl;
+
+      if (image.file) {
+        const formImage = new FormData();
+        formImage.append("file", image.file);
+        formImage.append("upload_preset", process.env.REACT_APP_PRESET_NAME);
+        imageUrl = await axios.post(process.env.REACT_APP_HOST_IMAGE_URL, formImage);
+      }
+
+
+      return API.patch(`/blog/edit/${blogId.slice(-24)}`, {
+        title,
+        content,
+        image: imageUrl && imageUrl.data.url ,
+      });
     },
-  });
+    {
+      retry: false,
+      onError: () => toast.error("Cannot edit the blog."),
+      onSuccess: () => {
+        toast.success("Edited the blog.");
+        navigate("/");
+      },
+    }
+  );
 
   const onSubmit = (e) => {
     e.preventDefault();
-
     const { title, content } = formValues;
-
     if (validateCreateBlog(title, content, image.file || image.old)) return;
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-
-    if (image.file) formData.append("image", image.file);
-
-    submit.mutate(formData);
+    submit.mutate();
   };
 
   if (!user && loading === false) {
@@ -116,7 +128,7 @@ const EditBlogPage = () => {
             <p className="mt-1 text-sm text-gray-500">SVG, PNG, JPG</p>
           </div>
 
-          {image.preview ? <img src={image.preview} className="w-full h-full" alt="" /> : image.old && <img src={hostImage(image.old)} />}
+          {image.preview ? <img src={image.preview} className="w-full h-full" alt="" /> : image.old && <img src={image.old} />}
 
           <button disabled={submit.isLoading} className={`bg-[#003566] text-white w-full rounded-lg p-1.5 mt-3 ${submit.isLoading && "opacity-80"}`}>
             {submit.isLoading ? <PulseLoader color="#fff" /> : "Edit Blog"}

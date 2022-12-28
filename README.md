@@ -21,5 +21,5 @@ Express Js
 - Bcrypt
 - Multer
 
-Database : Mongo DB
+Database : Mongo DB, Cloudinary
 

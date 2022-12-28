@@ -1,16 +1,12 @@
 const User = require("../models/User");
 const Blog = require("../models/Blog");
 const router = require("express").Router();
-const upload = require("../configs/image");
 const passport = require("passport");
-const fs = require("fs");
 const path = require("path");
-const util = require("util");
 const slugify = require("slugify");
 const { setHeaderJWT } = require("../middlewares/header");
 const mongoose = require("mongoose");
 
-const unlinkPromise = util.promisify(fs.unlink);
 
 router.get("/get-blog/:blogId", async (req, res) => {
   try {
@@ -65,11 +61,11 @@ router.get("/get-blogs", async (req, res) => {
   }
 });
 
-router.post("/create", setHeaderJWT, passport.authenticate("jwt", { session: false }), upload.single("image"), async (req, res) => {
+router.post("/create", setHeaderJWT, passport.authenticate("jwt", { session: false }), async (req, res) => {
   const { _id } = req.user;
-  const { title, content } = req.body;
+  const { title, content,image } = req.body;
   try {
-    const blog = new Blog({ userId: _id, title, content, image: `/public/images/${_id}/${req.file.filename}` });
+    const blog = new Blog({ userId: _id, title, content, image });
 
     await blog.save();
 
@@ -84,20 +80,15 @@ router.post("/create", setHeaderJWT, passport.authenticate("jwt", { session: fal
   }
 });
 
-router.patch("/edit/:blogId", setHeaderJWT, passport.authenticate("jwt", { session: false }), upload.single("image"), async (req, res) => {
+router.patch("/edit/:blogId", setHeaderJWT, passport.authenticate("jwt", { session: false }), async (req, res) => {
   const { _id } = req.user;
   const { blogId } = req.params;
-  const { title, content } = req.body;
+  const { title, content, image } = req.body;
   try {
-    let image
     const existBlog = await Blog.findOne({ _id: blogId, userId: _id });
     
     if (!existBlog) return res.status(404).json({ status: false, message: "Blog not found." });
     
-    if (req.file) {
-      await unlinkPromise(path.join(__dirname, `../${existBlog.image}`));
-      image = `/public/images/${_id}/${req.file.filename}`
-    }
     
     await existBlog.updateOne({ $set: { title, content, image } });
     res.status(200).json({ status: true });
@@ -115,8 +106,6 @@ router.delete("/delete/:blogId", setHeaderJWT, passport.authenticate("jwt", { se
   try {
     const existBlog = await Blog.findOne({ _id: blogId, userId: _id });
     if (!existBlog) return res.status(404).json({ status: false, message: "Blog not found." });
-
-    await unlinkPromise(path.join(__dirname, `../${existBlog.image}`));
 
     await existBlog.deleteOne();
     res.status(200).json({ status: true });

@@ -5,7 +5,6 @@ import _ from "lodash";
 import { API } from "../utils/api";
 import { useState } from "react";
 import LoadingFullPage from "../components/LoadingFullPage";
-import { hostImage } from "../utils/image";
 import { useSelector } from "react-redux";
 
 import { TfiFaceSad } from "react-icons/tfi";
@@ -54,7 +53,7 @@ const ProfilePage = () => {
         <Navbar />
         <div className="max-w-3xl w-full py-8 mx-auto">
           <header className="flex gap-3 sm:items-center border-b border-gray-400 border-opacity-50 mb-4 pb-4 px-3">
-            <img src={hostImage(userProfile.data.profilePicture)} className="sm:w-40 w-32 sm:h-40 h-32 object-cover rounded-full" alt="" />
+            <img src={userProfile.data.profilePicture} className="sm:w-40 w-32 sm:h-40 h-32 object-cover rounded-full" alt="" />
             <div className="flex flex-col h-full sm:w-auto w-full">
               <h1 className="font-medium text-3xl">{userProfile.data.name}</h1>
               <div className="flex sm:flex-row flex-col sm:gap-3 justify-around">
@@ -81,7 +80,7 @@ const ProfilePage = () => {
             {userProfile.data.blogs.length > 0 ? (
               userProfile.data.blogs.map((blog) => (
                 <Link to={`/blog/${blog.slug}`} key={blog._id} className="md:flex block hover:bg-gray-300 hover:bg-opacity-70 p-3">
-                  <img src={hostImage(blog.image)} alt="" className="w-full md:w-[330px]" />
+                  <img src={blog.image} alt="" className="w-full md:w-[330px]" />
                   <div className="p-3 pb-5 flex flex-col w-full">
                     <h2 className="text-2xl">{blog.title}</h2>
                     <p className="">{_.truncate(blog.content, { length: 75 })}</p>

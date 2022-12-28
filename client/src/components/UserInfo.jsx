@@ -2,11 +2,12 @@ import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 
 import { FaEllipsisH } from "react-icons/fa";
-import { hostImage } from "../utils/image";
 import { toast } from "react-hot-toast";
 import { API } from "../utils/api";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { useMutation } from "react-query";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -22,20 +23,31 @@ const UserInfo = ({ user: { name, profilePicture, followings, followers } }) => 
   const { user } = useSelector((state) => state.auth);
   const [profilePictureSetting, setProfilePictureSetting] = useState(initialProfilePictureSetting);
 
+  const update = useMutation(
+    async (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", process.env.REACT_APP_PRESET_NAME);
+
+      const profilePicture = await axios.post(process.env.REACT_APP_HOST_IMAGE_URL, formData);
+
+      return API.patch("/user/update-profile", { profilePicture: profilePicture.data.url });
+    },
+    {
+      retry: false,
+      onError: () => toast.error("Cannot update profile."),
+      onSuccess: ({ data }) => {
+        toast.success("Updated profile.");
+        setProfilePictureSetting({ ...initialProfilePictureSetting, preview: data.url });
+      },
+    }
+  );
+
   const onUpdateProfile = async () => {
     const { file } = profilePictureSetting;
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("profilePicture", file);
-
-    try {
-      await API.patch("/user/update-profile", formData);
-      toast.success("Updated profile.");
-      setProfilePictureSetting({ ...initialProfilePictureSetting, preview: URL.createObjectURL(file) });
-    } catch (error) {
-      toast.error("Cannot update profile.");
-    }
+    update.mutate(file);
   };
 
   return (
@@ -85,7 +97,7 @@ const UserInfo = ({ user: { name, profilePicture, followings, followers } }) => 
         </Transition>
       </Menu>
 
-      <img src={profilePictureSetting.preview || hostImage(profilePicture)} className="w-32 h-32 mx-auto object-cover rounded-full" alt="" />
+      <img src={profilePictureSetting.preview || profilePicture} className="w-32 h-32 mx-auto object-cover rounded-full" alt="" />
       <Link to={`/profile/${user?._id}`} className="text-center mt-4 text-lg cursor-pointer hover:underline">
         {name}
       </Link>
@@ -101,8 +113,12 @@ const UserInfo = ({ user: { name, profilePicture, followings, followers } }) => 
       </div>
       {profilePictureSetting.changed && (
         <div className="flex gap-2">
-          <button className="bg-white text-black rounded-sm w-full py-1" onClick={onUpdateProfile}>
-            Update Profile
+          <button
+            className={`bg-white text-black rounded-sm w-full py-1 ${update.isLoading && "opacity-80"}`}
+            disabled={update.isLoading}
+            onClick={onUpdateProfile}
+          >
+            {update.isLoading ? "Updating..." : "Update Profile"}
           </button>
           <button className="bg-red-500 text-white rounded-sm px-3 py-1" onClick={() => setProfilePictureSetting(initialProfilePictureSetting)}>
             Cancel

@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const cors = require("cors");
 const cookie = require("cookie-parser");
-const path = require("path");
 
 const app = express();
 
@@ -15,7 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookie());
 app.use(cors({ credentials: true, origin: CLIENT_URL }));
 app.use(passport.initialize());
-app.use("/public", express.static(path.join(__dirname, "./public")));
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");

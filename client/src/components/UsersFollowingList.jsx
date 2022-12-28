@@ -5,7 +5,6 @@ import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { API } from "../utils/api";
-import { hostImage } from "../utils/image";
 
 const UserList = () => {
   const { user } = useSelector((state) => state.auth);
@@ -31,7 +30,7 @@ const UserList = () => {
                 key={userFollow._id}
                 className="flex gap-x-4 items-center py-2 px-3 hover:bg-gray-300 hover:bg-opacity-50 text-gray-500 hover:text-black w-full"
               >
-                <img className="h-[30px] w-[32px] object-cover rounded-full" src={hostImage(userFollow.profilePicture)} alt="" />
+                <img className="h-[30px] w-[32px] object-cover rounded-full" src={userFollow.profilePicture} alt="" />
                 <span>{userFollow.name}</span>
               </Link>
             ))

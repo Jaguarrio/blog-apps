@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import { API } from "../utils/api";
 import { useQuery } from "react-query";
 import LoadingFullPage from "../components/LoadingFullPage";
-import { hostImage } from "../utils/image";
 
 const UsersPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,7 +61,7 @@ const UsersPage = () => {
 
                 return (
                   <Link to={`/profile/${userItem._id}`} key={userItem._id} className="w-full bg-white flex items-center gap-3 rounded-lg">
-                    <img src={hostImage(userItem.profilePicture)} className="w-20 h-20 p-3 object-cover rounded-full bg-white" alt="" />
+                    <img src={userItem.profilePicture} className="w-20 h-20 p-3 object-cover rounded-full bg-white" alt="" />
                     <div className="py-3">
                       <h2 className="font-medium mb-1">{userItem.name}</h2>
                       <p className="text-sm text-gray-500">

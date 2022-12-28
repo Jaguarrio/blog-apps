@@ -3,7 +3,6 @@ const passport = require("passport");
 const User = require("../models/User");
 const router = require("express").Router();
 const { setHeaderJWT } = require("../middlewares/header");
-const upload = require("../configs/image");
 
 router.get("/get-user/:userId", async (req, res) => {
   try {
@@ -101,11 +100,12 @@ router.patch("/follow/:userId", setHeaderJWT, passport.authenticate("jwt", { ses
   }
 });
 
-router.patch("/update-profile", setHeaderJWT, passport.authenticate("jwt", { session: false }), upload.single("profilePicture"), async (req, res) => {
+router.patch("/update-profile", setHeaderJWT, passport.authenticate("jwt", { session: false }), async (req, res) => {
+  const { profilePicture } = req.body;
   try {
-    await User.updateOne({ _id: req.user._id }, { $set: { profilePicture: `/public/images/${req.user._id}/${req.file.filename}` } });
+    await User.updateOne({ _id: req.user._id }, { $set: { profilePicture } });
 
-    res.status(200).json({ status: true });
+    res.status(200).json({ url: profilePicture });
   } catch (error) {
     res.status(500).json({
       status: false,

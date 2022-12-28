@@ -4,7 +4,6 @@ import { MdThumbUpAlt, MdOutlineThumbUpOffAlt } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API } from "../utils/api";
-import { hostImage } from "../utils/image";
 import useAuth from "../utils/useAuth";
 import Navbar from "../components/Navbar";
 import LoadingFullPage from "../components/LoadingFullPage";
@@ -85,7 +84,7 @@ const BlogPage = () => {
           </div>
           <div className="flex justify-between items-center">
             <Link to={`/profile/${blog.data.user._id}`} className="flex items-center hover:underline cursor-pointer my-5 gap-3">
-              <img src={hostImage(blog.data.user.profilePicture)} className="w-9 h-9 object-cover rounded-full" alt="" />
+              <img src={blog.data.user.profilePicture} className="w-9 h-9 object-cover rounded-full" alt="" />
               <h2>{blog.data.user.name}</h2>
             </Link>
             {user?._id == blog.data.userId && (
@@ -103,7 +102,7 @@ const BlogPage = () => {
           </div>
         </header>
         <section>
-          <img src={hostImage(blog.data.image)} className="my-5 h-full max-h-[600px] mx-auto object-cover" alt={blog.data.title} />
+          <img src={blog.data.image} className="my-5 h-full max-h-[600px] mx-auto object-cover" alt={blog.data.title} />
           {blog.data.content}
         </section>
       </article>
